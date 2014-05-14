@@ -2,6 +2,7 @@
 #include <GL/freeglut.h>
     #include <GL/gl.h>
     #include <GL/glu.h>
+#include <QtDebug>
 
 #include <iostream>
 #include "Extra.h"
@@ -80,6 +81,7 @@ void Camera::MouseClick(Button button, int x, int y)
 
 void Camera::MouseDrag(int x, int y)
 {
+    qDebug() << mButtonState;
     switch (mButtonState)
     {
     case LEFT:

@@ -3,6 +3,10 @@
 
 #include <QGLWidget>
 #include "camera.h"
+#include <vecmath/include/vecmath.h>
+#include <vector>
+
+using namespace std;
 
 class GLWidget : public QGLWidget
 {
@@ -10,6 +14,8 @@ class GLWidget : public QGLWidget
 public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
+    void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f);
+    void reset_cam();
 
 public slots:
      void setXRotation(int angle);
@@ -32,6 +38,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     Camera camera;
+
+
+
 private:
     void draw();
 
@@ -42,6 +51,10 @@ private:
     QPoint lastPos;
 
     bool click;
+
+    vector<Vector3f> vertices;
+    vector<Vector3f> normals;
+    vector<vector<int>> faces;
 
 };
 

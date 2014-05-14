@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    cgalstuffdoit();
+    //cgalstuffdoit();
 
     return a.exec();
 }
