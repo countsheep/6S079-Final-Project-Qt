@@ -12,13 +12,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
-LIBS += -L/usr/local/lib -lCGAL -lCGAL_Core -lmpfr -lgmp -lboost_system
+LIBS += -L/usr/lib -lCGAL -lCGAL_Core -lmpfr -lgmp -lboost_system -lGLU
 
 QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS += -stdlib=libc++
+#QMAKE_CXXFLAGS += -stdlib=libc++
 QMAKE_CXXFLAGS += -DBOOST_NO_CXX11_NUMERIC_LIMITS
 #QMAKE_CXXFLAGS += -arch x86_64
-INCLUDEPATH +=   /usr/local/include
+INCLUDEPATH +=   /usr/include
 
 TARGET = 6S079-Final-Project-Qt
 TEMPLATE = app

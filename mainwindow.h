@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QWidget>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -16,12 +17,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QSize sizeHint();
-
-protected:
-    void keyPressEvent(QKeyEvent *event);
+private slots:
+    void load_file();
 
 private:
     Ui::MainWindow *ui;
+    QString path;
 };
 
 #endif // MAINWINDOW_H

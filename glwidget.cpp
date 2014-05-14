@@ -1,4 +1,7 @@
 #include "glwidget.h"
+#include <QtDebug>
+#include <QtEvents>
+#include<QFlags>
 
 GLWidget::GLWidget(QWidget *parent) :
     QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
@@ -6,7 +9,11 @@ GLWidget::GLWidget(QWidget *parent) :
     xRot = 0;
     yRot = 0;
     zRot = 0;
-    this->hide();
+    qDebug() << parent->parent();
+    click = false;
+    camera.SetDimensions( 600, 600 );
+    camera.SetDistance( 10 );
+    camera.SetCenter( Vector3f::ZERO );
 }
 
 GLWidget::~GLWidget()
@@ -31,6 +38,36 @@ static void qNormalizeAngle(int &angle)
         angle -= 360 * 16;
 }
 
+
+void GLWidget::setXRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    if (angle != xRot) {
+        xRot = angle;
+        emit xRotationChanged(angle);
+        updateGL();
+    }
+}
+
+void GLWidget::setYRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    if (angle != yRot) {
+        yRot = angle;
+        emit xRotationChanged(angle);
+        updateGL();
+    }
+}
+
+void GLWidget::setZRotation(int angle)
+{
+    qNormalizeAngle(angle);
+    if (angle != zRot) {
+        zRot = angle;
+        emit xRotationChanged(angle);
+        updateGL();
+    }
+}
 void GLWidget::initializeGL()
 {
     qglClearColor(Qt::black);
@@ -48,11 +85,14 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
-    glTranslatef(0.0, 0.0, -10.0);
-    glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
-    glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-    glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
+    glLoadMatrixf( camera.viewMatrix() );
+    //glTranslatef(0.0, 0.0, -10.0);
+    //glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
+    //glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
+    //glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
     draw();
 }
 
@@ -73,11 +113,41 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    lastPos = event->pos();
+    if(event->buttons() && Qt::LeftButton){
+        qDebug() << "left";
+        camera.MouseClick(Camera::LEFT, event->x(), event->y());
+    }
+    else if (event->buttons() && Qt::RightButton){
+        qDebug() << "right";
+        camera.MouseClick(Camera::RIGHT, event->x(), event->y());
+    }
+    else if (event->buttons() && Qt::MiddleButton){
+        qDebug() << "middle";
+        camera.MouseClick(Camera::MIDDLE, event->x(), event->y());
+    }
+}
 
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    camera.MouseRelease(event->x(), event->y());
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    camera.MouseDrag(event->x(),event->y());
+
+    int dx = event->x() - lastPos.x();
+    int dy = event->y() - lastPos.y();
+
+    if (event->buttons()) {
+     setXRotation(xRot + 8 * dy);
+     setYRotation(yRot + 8 * dx);
+     setZRotation(zRot + 8 * dx);
+    }
+    lastPos = event->pos();
+    //qDebug() << xRot / 16 << " " << yRot / 16 << " " << zRot / 16;
+
 
 }
 

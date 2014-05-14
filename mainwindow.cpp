@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(load_file()));
 }
 
 MainWindow::~MainWindow()
@@ -16,15 +17,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QSize GLWidget::sizeHint() const
-{
-    return QSize(400, 400);
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *e)
-{
-    if (e->key() == Qt::Key_Escape)
-        close();
-    else
-        QWidget::keyPressEvent(e);
+void MainWindow::load_file(){
+    path = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                        "",
+                                        tr("Files (*.*)"));
+    qDebug() << ui->glwidget;
 }

@@ -2,6 +2,7 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
+#include "camera.h"
 
 class GLWidget : public QGLWidget
 {
@@ -10,9 +11,15 @@ public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
 
-signals:
-
 public slots:
+     void setXRotation(int angle);
+     void setYRotation(int angle);
+     void setZRotation(int angle);
+
+ signals:
+     void xRotationChanged(int angle);
+     void yRotationChanged(int angle);
+     void zRotationChanged(int angle);
 
 protected:
     void initializeGL();
@@ -22,7 +29,9 @@ protected:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
     void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    Camera camera;
 private:
     void draw();
 
@@ -31,6 +40,8 @@ private:
     int zRot;
 
     QPoint lastPos;
+
+    bool click;
 
 };
 
