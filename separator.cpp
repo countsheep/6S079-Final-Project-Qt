@@ -58,6 +58,22 @@ void Separator::slice(float a ,float b,float c,float d) {
             ++i;
         }
     }
-
-    //cutMesh.convert_to_polyhedron(returnPoly);
 }
+
+void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
+    Nef_polyhedron np = meshPieces.at(index);
+    Polyhedron_extcart p;
+    np.convert_to_polyhedron(p);
+
+    typedef Polyhedron_extcart::Facet_iterator Facet_iterator;
+    typedef Polyhedron_extcart::Halfedge_around_facet_circulator Halfedge_facet_circulator;
+    for(Facet_iterator facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
+        Halfedge_facet_circulator h = facet_it->facet_begin();
+        do {
+            Point_3 point =  h->vertex()->point();
+            Vector3f vec(point.x(),point.y(),point.z());
+        } while ( ++h != facet_it->facet_begin() );
+    }
+}
+
+
