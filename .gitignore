@@ -1,3 +1,7 @@
 6S079-Final-Project-Qt.pro
 6S079-Final-Project-Qt.pro.user
 6S079-Final-Project-Qt.pro.user.80e8d81
+
+*.o
+*.pro
+*.user
