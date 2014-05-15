@@ -28,7 +28,7 @@ typedef Polyhedron::Halfedge_around_vertex_circulator Vertex_halfedge_circulator
 typedef double                      FT;
 typedef CGAL::Simple_cartesian<FT>  K;
 typedef K::Line_3                   Line;
-typedef K::Plane_3                  Plane;
+typedef K::Plane_3                  Plane_3;
 typedef K::Point_3                  Point;
 typedef K::Triangle_3               Triangle;
 
@@ -107,11 +107,11 @@ std::vector<std::vector<Vector3f> > Segmenter::get_joint_planes() {
             // jointPoints is a list of the vertices that make up the boundary between two segments
             // PCA fit a plane and find the centroid of the points listed in jointPoints
             if (joints.at(i).at(j).size() > 0) {
-                Plane plane;
+                Plane_3 plane;
                 linear_least_squares_fitting_3(jointPoints.begin(),jointPoints.end(),plane,CGAL::Dimension_tag<0>());
                 Point centroidPoint = CGAL::centroid(jointPoints.begin(), jointPoints.end(),CGAL::Dimension_tag<0>());
 
-                float scale = 2.0;
+                float scale = 0.5;
                 Vector3f planeVector1(plane.base1().x(),plane.base1().y(),plane.base1().z());
                 Vector3f planeVector2(plane.base2().x(),plane.base2().y(),plane.base2().z());
                 Vector3f planeCentroid(centroidPoint.x(),centroidPoint.y(),centroidPoint.z());
@@ -119,8 +119,9 @@ std::vector<std::vector<Vector3f> > Segmenter::get_joint_planes() {
                 std::vector<Vector3f> planePoints;
                 planePoints.push_back(planeCentroid+planeVector1*scale);
                 planePoints.push_back(planeCentroid+planeVector2*scale);
-                planePoints.push_back(planeCentroid-planeVector1*scale);
                 planePoints.push_back(planeCentroid-planeVector2*scale);
+                planePoints.push_back(planeCentroid-planeVector1*scale);
+
                 qDebug() << "Plane Points: (" << planePoints.at(0).x() << planePoints.at(0).y() << planePoints.at(0).z() <<
                                         ") (" << planePoints.at(1).x() << planePoints.at(1).y() << planePoints.at(1).z() <<
                                         ") (" << planePoints.at(2).x() << planePoints.at(2).y() << planePoints.at(2).z() <<

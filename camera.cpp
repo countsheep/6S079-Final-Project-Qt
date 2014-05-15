@@ -15,10 +15,10 @@ Camera::Camera()
 {
     mStartRot = Matrix4f::identity();
     mCurrentRot = Matrix4f::identity();
-    plane_up = Vector3f(0.0f, 1.0f, 0.0f);
+    /*plane_up = Vector3f(0.0f, 1.0f, 0.0f);
     plane_horizontal = Vector3f(1.0f, 0.0f, 0.0f);
     norm = Vector3f(0.0f, 0.0f, 1.0f);
-    d = 0.0f;
+    d = 0.0f;*/
 
 }
 
@@ -57,6 +57,39 @@ void Camera::SetDistance(const float distance)
     mStartDistance = mCurrentDistance = distance;
 }
 
+void Camera::setMoveCenter(int x, int y)
+{
+    mStartClick[0] = x;
+    mStartClick[1] = y;
+
+    int cx = x - mViewport[0];
+    int cy = y - mViewport[1];
+
+
+    // compute "distance" of image plane (wrt projection matrix)
+    float d = float(mViewport[3])/2.0f / tan(mPerspective[0]*M_PI / 180.0f / 2.0f);
+
+    // compute up plane intersect of clickpoint (wrt fovy)
+
+    float cu = -cy + mViewport[3]/2.0f;
+
+    // compute right plane intersect of clickpoint (ASSUMED FOVY is 1)
+
+    float cr = (cx - mViewport[2]/2.0f);
+
+    Vector2f move(cr, cu);
+
+    // this maps move
+    move *= -mCurrentDistance/d;
+    moving = true;
+    mCurrentMoveCenter = mStartMoveCenter =  move[0] * Vector3f(mCurrentRot(0,0),mCurrentRot(0,1),mCurrentRot(0,2)) + move[1] * Vector3f(mCurrentRot(1,0),mCurrentRot(1,1),mCurrentRot(1,2));
+    qDebug() << mCurrentMoveCenter.x() << " " << mCurrentMoveCenter.y() << " " << mCurrentMoveCenter.z();
+}
+
+void Camera::stopMove()
+{
+    moving = false;
+}
 void Camera::MouseClick(Button button, int x, int y)
 {
     mStartClick[0] = x;
@@ -103,10 +136,11 @@ void Camera::MouseRelease(int x, int y)
     mStartRot = mCurrentRot;
     mStartCenter = mCurrentCenter;
     mStartDistance = mCurrentDistance;
+    moving = false;
 
     mButtonState = NONE;
 
-    setPlane();
+    //setPlane();
 }
 
 
@@ -252,12 +286,63 @@ void Camera::DistanceZoom(int x, int y)
     int cy = y - mViewport[1];
 
     float delta = float(cy-sy)/mViewport[3];
+    qDebug()<< delta;
+
 
     // exponential zoom factor
     mCurrentDistance = mStartDistance * exp(delta);
+    qDebug()<< "current " << mCurrentDistance;
 }
 
-Vector3f Camera::getNearestUp(){
+void Camera::deltaZoom(int delt)
+{
+
+    float delta = float (delt)/float (mViewport[3]);
+
+    qDebug()<< "delt " << delt << ", div " << mViewport[3] << ", delta " << delta;
+
+    // exponential zoom factor
+    mCurrentDistance = mStartDistance * exp(delta);
+    mStartDistance = mCurrentDistance;
+    qDebug()<< "current " << mCurrentDistance;
+}
+
+Vector3f Camera::getMoveDist(int x, int y){
+    // map window x,y into viewport x,y
+
+    // start
+    int sx = mStartClick[0] - mViewport[0];
+    int sy = mStartClick[1] - mViewport[1];
+
+    // current
+    int cx = x - mViewport[0];
+    int cy = y - mViewport[1];
+
+
+    // compute "distance" of image plane (wrt projection matrix)
+    float d = float(mViewport[3])/2.0f / tan(mPerspective[0]*M_PI / 180.0f / 2.0f);
+
+    // compute up plane intersect of clickpoint (wrt fovy)
+    float su = -sy + mViewport[3]/2.0f;
+    float cu = -cy + mViewport[3]/2.0f;
+
+    // compute right plane intersect of clickpoint (ASSUMED FOVY is 1)
+    float sr = (sx - mViewport[2]/2.0f);
+    float cr = (cx - mViewport[2]/2.0f);
+
+    Vector2f move(cr-sr, cu-su);
+
+    // this maps move
+    move *= -mCurrentDistance/d;
+
+    Vector3f movement = move[0] * Vector3f(mCurrentRot(0,0),mCurrentRot(0,1),mCurrentRot(0,2)) + move[1] * Vector3f(mCurrentRot(1,0),mCurrentRot(1,1),mCurrentRot(1,2));
+
+    mCurrentMoveCenter = mStartMoveCenter + movement;
+    return movement;
+
+}
+
+/*Vector3f Camera::getNearestUp(){
     return plane_up;
 }
 
@@ -330,4 +415,4 @@ void Camera::setPlane(){
     }
     plane_horizontal = Vector3f(dots[max_int].x(), dots[max_int].y(), dots[max_int].z());
 
-}
+}*/

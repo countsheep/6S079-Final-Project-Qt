@@ -52,12 +52,18 @@ public:
     float GetDistance() const { return mCurrentDistance; }
 
     //Get the vectors that describe the closest xyz plane
-    Vector3f getNearestUp();
-    Vector3f getNearestHorizontal();
+   //Vector3f getNearestUp();
+    //Vector3f getNearestHorizontal();
     void PlaneTranslation(int x, int y);
-    Vector3f getNorm() const {return norm;}
+    /*Vector3f getNorm() const {return norm;}
     float getD() const {return d;}
-    Vector3f getForcePoint(Vector3f center, int x, int y);
+    Vector3f getForcePoint(Vector3f center, int x, int y);*/
+    void deltaZoom(int delt);
+    Vector3f getMoveDist(int x, int y);
+    void setMoveCenter(int x, int y);
+    void stopMove();
+    bool moving = false;
+
 
 private:
 
@@ -76,6 +82,9 @@ private:
     Vector3f mStartCenter;
     Vector3f mCurrentCenter;
 
+    Vector3f mStartMoveCenter;
+    Vector3f mCurrentMoveCenter;
+
     // For zoom
     float   mStartDistance;
     float   mCurrentDistance;
@@ -84,13 +93,15 @@ private:
 
     void DistanceZoom(int x, int y);
 
+
+
     //Describe closest xyz plane
-    void setPlane();
+/*    void setPlane();
     Vector3f plane_up;
     Vector3f plane_horizontal;
 
     Vector3f norm;
-    float d;
+    float d;*/
 };
 
 #endif

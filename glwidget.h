@@ -5,6 +5,8 @@
 #include "camera.h"
 #include <vecmath/include/vecmath.h>
 #include <vector>
+#include <QWheelEvent>
+#include <plane.h>
 
 using namespace std;
 
@@ -14,35 +16,32 @@ class GLWidget : public QGLWidget
 public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
-    void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c);
+    void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c, vector<vector<Vector3f>> p);
     void reset_cam();
+    void createPlane(vector<Vector3f> points);
 
 public slots:
-     void setXRotation(int angle);
-     void setYRotation(int angle);
-     void setZRotation(int angle);
+
 
  signals:
-     void xRotationChanged(int angle);
-     void yRotationChanged(int angle);
-     void zRotationChanged(int angle);
 
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
 
-    QSize minimumSizeHint() const;
-    QSize sizeHint() const;
+
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
     Camera camera;
 
 
 
 private:
     void draw();
+    void drawPlanes();
 
     int xRot;
     int yRot;
@@ -57,6 +56,8 @@ private:
     vector<vector<int>> faces;
     vector<int> segments;
     vector<Vector3f> colors;
+    vector<Plane> planes;
+    int picked = -1;
 
 };
 

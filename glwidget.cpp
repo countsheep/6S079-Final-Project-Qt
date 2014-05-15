@@ -23,72 +23,24 @@ GLWidget::GLWidget(QWidget *parent) :
 
     camera.SetPerspective(50);
     glLoadMatrixf( camera.projectionMatrix() );
+    /*vector<Vector3f> test;
+    test.push_back(Vector3f(1.0, 1.0, -1.0));
+    test.push_back(Vector3f(1.0, -1.0, 1.0));
+    test.push_back(Vector3f(-1.0, 1.0, -1.0));
+    test.push_back(Vector3f(-1.0, -1.0, 1.0));
+    this->createPlane(test);*/
 }
 
 GLWidget::~GLWidget()
 {
 }
 
-QSize GLWidget::minimumSizeHint() const
-{
-    return QSize(50, 50);
-}
 
-QSize GLWidget::sizeHint() const
-{
-    return QSize(400, 400);
-}
-
-static void qNormalizeAngle(int &angle)
-{
-    while (angle < 0)
-        angle += 360 * 16;
-    while (angle > 360)
-        angle -= 360 * 16;
-}
-
-
-void GLWidget::setXRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != xRot) {
-        xRot = angle;
-        emit xRotationChanged(angle);
-        updateGL();
-    }
-}
-
-void GLWidget::setYRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != yRot) {
-        yRot = angle;
-        emit xRotationChanged(angle);
-        updateGL();
-    }
-}
-
-void GLWidget::setZRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != zRot) {
-        zRot = angle;
-        emit xRotationChanged(angle);
-        updateGL();
-    }
-}
 void GLWidget::initializeGL()
 {
     qglClearColor(Qt::black);
 
-    /*glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    static GLfloat lightPosition[4] = { 0, 0, 10, 1.0 };
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);*/
+\
     glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
     glEnable(GL_LIGHTING);     // Enable lighting calculations
     glEnable(GL_LIGHT0);       // Turn on light #0.
@@ -112,7 +64,7 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glLoadIdentity();
+\
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
@@ -121,11 +73,9 @@ void GLWidget::paintGL()
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
 
     glLoadMatrixf( camera.viewMatrix() );
-    //glTranslatef(0.0, 0.0, -10.0);
-    //glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
-    //glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-    //glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
+
     draw();
+    drawPlanes();
     if( click )
     {
         glPushMatrix();
@@ -169,16 +119,7 @@ void GLWidget::resizeGL(int width, int height)
 
     camera.SetPerspective(50);
     glLoadMatrixf( camera.projectionMatrix() );
-    /*glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-#ifdef QT_OPENGL_ES_1
-    glOrthof(-2, +2, -2, +2, 1.0, 15.0);
-#else
-    glOrtho(-2, +2, -2, +2, 1.0, 15.0);
-#endif
-    glMatrixMode(GL_MODELVIEW);*/
+\
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -187,13 +128,13 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lastPos = event->pos();
     if(event->button() == Qt::LeftButton){
 
-        camera.MouseClick(Camera::LEFT, event->x(), event->y());
+        camera.setMoveCenter(event->x(), event->y());
     }
     else if (event->button() == Qt::RightButton){
-        camera.MouseClick(Camera::RIGHT, event->x(), event->y());
+        camera.MouseClick(Camera::MIDDLE, event->x(), event->y());
     }
     else if (event->button() == Qt::MiddleButton){
-        camera.MouseClick(Camera::MIDDLE, event->x(), event->y());
+        camera.MouseClick(Camera::LEFT, event->x(), event->y());
     }
 }
 
@@ -207,27 +148,31 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     camera.MouseDrag(event->x(),event->y());
 
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
-
-    if (event->buttons()) {
-     setXRotation(xRot + 8 * dy);
-     setYRotation(yRot + 8 * dx);
-     setZRotation(zRot + 8 * dx);
+    if (camera.moving){
+        Vector3f moved = camera.getMoveDist(event->x(),event->y());
     }
-    lastPos = event->pos();
-    //qDebug() << xRot / 16 << " " << yRot / 16 << " " << zRot / 16;
-
-
+    updateGL();
 }
 
-void GLWidget::set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c){
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+
+    camera.deltaZoom(event->delta());
+    this->updateGL();
+}
+
+
+void GLWidget::set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c, vector<vector<Vector3f>> p){
     this->vertices = v;
     this->normals = n;
     this->faces = f;
     this->reset_cam();
     this->segments = s;
     this->colors = c;
+    planes.clear();
+    for (int i = 0; i < p.size(); i++){
+        this->createPlane(p[i]);
+    }
 }
 
 void GLWidget::reset_cam()
@@ -237,41 +182,14 @@ void GLWidget::reset_cam()
     camera.SetCenter( Vector3f::ZERO );
 }
 
+void GLWidget::createPlane(vector<Vector3f> points)
+{
+    Plane p(points);
+    planes.push_back(p);
+}
+
 void GLWidget::draw()
 {
-    /*qglColor(Qt::red);
-    glBegin(GL_QUADS);
-        glNormal3f(0,0,-1);
-        glVertex3f(-1,-1,0);
-        glVertex3f(-1,1,0);
-        glVertex3f(1,1,0);
-        glVertex3f(1,-1,0);
-
-    glEnd();
-    glBegin(GL_TRIANGLES);
-        glNormal3f(0,-1,0.707);
-        glVertex3f(-1,-1,0);
-        glVertex3f(1,-1,0);
-        glVertex3f(0,0,1.2);
-    glEnd();
-    glBegin(GL_TRIANGLES);
-        glNormal3f(1,0, 0.707);
-        glVertex3f(1,-1,0);
-        glVertex3f(1,1,0);
-        glVertex3f(0,0,1.2);
-    glEnd();
-    glBegin(GL_TRIANGLES);
-        glNormal3f(0,1,0.707);
-        glVertex3f(1,1,0);
-        glVertex3f(-1,1,0);
-        glVertex3f(0,0,1.2);
-    glEnd();
-    glBegin(GL_TRIANGLES);
-        glNormal3f(-1,0,0.707);
-        glVertex3f(-1,1,0);
-        glVertex3f(-1,-1,0);
-        glVertex3f(0,0,1.2);
-    glEnd();*/
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_SMOOTH);
 
@@ -290,4 +208,57 @@ void GLWidget::draw()
         }
     }
     glEnd();
+}
+
+void GLWidget::drawPlanes(){
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_SMOOTH);
+    glBegin(GL_TRIANGLES);
+
+    for(unsigned int i=0; i < planes.size(); i++){
+        Plane plane = planes[i];
+        Vector3f norm = plane.getNormal();
+        Vector3f col = plane.getColorf();
+        vector<Vector3f> points = plane.getPoints();
+        if (i == picked){
+            glColor4f(col.x(), col.y(), col.z(), 0.8);
+        }
+        else{glColor4f(col.x(), col.y(), col.z(), 0.5);}
+        //for (unsigned int k=0; k<2; k++){
+
+            //norm = norm*-1;
+            for(unsigned int j=2; j<points.size(); j++){
+                Vector3f vertex = points[j-2];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+                vertex = points[j-1];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+                vertex = points[j];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+            }
+        //}
+        glDisable(GL_DITHER);
+        glColor3ub(col.x(), col.y(), col.z());
+        for (unsigned int k=0; k<2; k++){
+            //norm = norm*-1;
+            for(unsigned int j=2; j<points.size(); j++){
+                Vector3f vertex = points[j-2];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+                vertex = points[j-1];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+                vertex = points[j];
+                glNormal3d(norm.x(), norm.y(), norm.z());
+                glVertex3d(vertex.x(), vertex.y(), vertex.z());
+            }
+        }
+        glEnable(GL_DITHER);
+    }
+
+    glEnd();
+    glEnable(GL_CULL_FACE);
+
 }

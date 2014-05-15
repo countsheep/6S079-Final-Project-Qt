@@ -27,7 +27,7 @@ typedef Polyhedron::Halfedge_around_vertex_circulator Vertex_halfedge_circulator
 typedef double                      FT;
 typedef CGAL::Simple_cartesian<FT>  K;
 typedef K::Line_3                   Line;
-typedef K::Plane_3                  Plane;
+typedef K::Plane_3                  Plane_3;
 typedef K::Point_3                  Point;
 typedef K::Triangle_3               Triangle;
 
