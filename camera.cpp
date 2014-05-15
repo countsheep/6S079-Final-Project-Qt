@@ -83,7 +83,7 @@ void Camera::setMoveCenter(int x, int y)
     move *= -mCurrentDistance/d;
     moving = true;
     mCurrentMoveCenter = mStartMoveCenter =  move[0] * Vector3f(mCurrentRot(0,0),mCurrentRot(0,1),mCurrentRot(0,2)) + move[1] * Vector3f(mCurrentRot(1,0),mCurrentRot(1,1),mCurrentRot(1,2));
-    qDebug() << mCurrentMoveCenter.x() << " " << mCurrentMoveCenter.y() << " " << mCurrentMoveCenter.z();
+    //qDebug() << mCurrentMoveCenter.x() << " " << mCurrentMoveCenter.y() << " " << mCurrentMoveCenter.z();
 }
 
 void Camera::stopMove()
@@ -286,12 +286,12 @@ void Camera::DistanceZoom(int x, int y)
     int cy = y - mViewport[1];
 
     float delta = float(cy-sy)/mViewport[3];
-    qDebug()<< delta;
+    //qDebug()<< delta;
 
 
     // exponential zoom factor
     mCurrentDistance = mStartDistance * exp(delta);
-    qDebug()<< "current " << mCurrentDistance;
+    //qDebug()<< "current " << mCurrentDistance;
 }
 
 void Camera::deltaZoom(int delt)
@@ -299,12 +299,12 @@ void Camera::deltaZoom(int delt)
 
     float delta = float (delt)/float (mViewport[3]);
 
-    qDebug()<< "delt " << delt << ", div " << mViewport[3] << ", delta " << delta;
+    //qDebug()<< "delt " << delt << ", div " << mViewport[3] << ", delta " << delta;
 
     // exponential zoom factor
     mCurrentDistance = mStartDistance * exp(delta);
     mStartDistance = mCurrentDistance;
-    qDebug()<< "current " << mCurrentDistance;
+    //qDebug()<< "current " << mCurrentDistance;
 }
 
 Vector3f Camera::getMoveDist(int x, int y){

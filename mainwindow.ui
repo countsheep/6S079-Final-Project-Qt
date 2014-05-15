@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>726</width>
-    <height>491</height>
+    <width>900</width>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,12 +35,151 @@
         <height>300</height>
        </size>
       </property>
-      <zorder>verticalSpacer</zorder>
-      <zorder>verticalSpacer</zorder>
+      <zorder></zorder>
+      <zorder>widget_3</zorder>
      </widget>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="last">
+           <property name="text">
+            <string>Previous</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="nplane">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Plane #1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="next">
+           <property name="text">
+            <string>Next</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Move Plane&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_3" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QPushButton" name="subX">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>X</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addX">
+           <property name="minimumSize">
+            <size>
+             <width>85</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>+</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_4" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="subY">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Y</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addY">
+           <property name="minimumSize">
+            <size>
+             <width>85</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>+</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_5" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QPushButton" name="subZ">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Z</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addZ">
+           <property name="minimumSize">
+            <size>
+             <width>85</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>+</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -55,9 +194,16 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="delete_plane">
         <property name="text">
-         <string>Confirm Joints</string>
+         <string>Delete Plane</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="confirm">
+        <property name="text">
+         <string>Confirm All Joints</string>
         </property>
        </widget>
       </item>
@@ -70,7 +216,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>726</width>
+     <width>900</width>
      <height>25</height>
     </rect>
    </property>
@@ -112,8 +258,181 @@
    <extends>QWidget</extends>
    <header>glwidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>addX()</slot>
+    <slot>addY()</slot>
+    <slot>addZ()</slot>
+    <slot>subX()</slot>
+    <slot>subY()</slot>
+    <slot>subZ()</slot>
+    <slot>nextPlane()</slot>
+    <slot>lastPlane()</slot>
+    <slot>deletePlane()</slot>
+    <slot>confirm()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>addX</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>addX()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>838</x>
+     <y>144</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addY</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>addY()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>838</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addZ</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>addZ()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>838</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>subX</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>subX()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>673</x>
+     <y>144</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>subY</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>subY()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>673</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>subZ</sender>
+   <signal>pressed()</signal>
+   <receiver>glwidget</receiver>
+   <slot>subZ()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>673</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>confirm</sender>
+   <signal>clicked()</signal>
+   <receiver>glwidget</receiver>
+   <slot>confirm()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>755</x>
+     <y>601</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>delete_plane</sender>
+   <signal>clicked()</signal>
+   <receiver>glwidget</receiver>
+   <slot>deletePlane()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>755</x>
+     <y>568</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>last</sender>
+   <signal>clicked()</signal>
+   <receiver>glwidget</receiver>
+   <slot>lastPlane()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>673</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>next</sender>
+   <signal>clicked()</signal>
+   <receiver>glwidget</receiver>
+   <slot>nextPlane()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>838</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

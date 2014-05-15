@@ -21,9 +21,18 @@ public:
     void createPlane(vector<Vector3f> points);
 
 public slots:
+    void addX();
+    void subX();
+    void addY();
+    void subY();
+    void addZ();
+    void subZ();
+    void nextPlane();
+    void lastPlane();
+    void deletePlane();
+    void confirm();
 
-
- signals:
+signals:
 
 protected:
     void initializeGL();
@@ -42,6 +51,7 @@ protected:
 private:
     void draw();
     void drawPlanes();
+    void drawBuffPlanes();
 
     int xRot;
     int yRot;
@@ -50,6 +60,7 @@ private:
     QPoint lastPos;
 
     bool click;
+    bool pick = false;
 
     vector<Vector3f> vertices;
     vector<Vector3f> normals;
@@ -58,6 +69,10 @@ private:
     vector<Vector3f> colors;
     vector<Plane> planes;
     int picked = -1;
+    void colorPick();
+    int cX;
+    int cY;
+    float stepsize = 0.005f;
 
 };
 

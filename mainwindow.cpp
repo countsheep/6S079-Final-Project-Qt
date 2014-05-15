@@ -22,6 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(load_file()));
+    ui->addX->setAutoRepeat(true);
+    ui->addY->setAutoRepeat(true);
+    ui->addZ->setAutoRepeat(true);
+    ui->subX->setAutoRepeat(true);
+    ui->subY->setAutoRepeat(true);
+    ui->subZ->setAutoRepeat(true);
 }
 
 MainWindow::~MainWindow()
@@ -233,4 +239,9 @@ void MainWindow::assign_colors(vector<int> seg)
         Vector3f color(rand()%256, rand()%256,rand()%256);
         colors.push_back(color);
     }
+}
+
+void MainWindow::on_last_clicked()
+{
+
 }

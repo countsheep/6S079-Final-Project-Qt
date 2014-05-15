@@ -25,6 +25,8 @@ private slots:
     void parseSTL(string source, string dest);
     void parseOFF(string source, string dest);
 
+    void on_last_clicked();
+
 private:
     Ui::MainWindow *ui;
     string path;

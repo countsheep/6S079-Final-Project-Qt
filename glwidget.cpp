@@ -14,15 +14,16 @@ GLWidget::GLWidget(QWidget *parent) :
     zRot = 0;
     click = false;
 
-    camera.SetDimensions( 580, 435 );
+    camera.SetDimensions( 606, 569 );
     camera.SetDistance( 10 );
     camera.SetCenter( Vector3f::ZERO );
-    camera.SetViewport(0,0,580,435);
+    camera.SetViewport(0,0,606, 569);
     camera.ApplyViewport();
     glMatrixMode(GL_PROJECTION);
 
     camera.SetPerspective(50);
     glLoadMatrixf( camera.projectionMatrix() );
+    picked = 0;
     /*vector<Vector3f> test;
     test.push_back(Vector3f(1.0, 1.0, -1.0));
     test.push_back(Vector3f(1.0, -1.0, 1.0));
@@ -35,7 +36,79 @@ GLWidget::~GLWidget()
 {
 }
 
+void GLWidget::addX(){
+    qDebug() <<"first";
+    qDebug() << picked;
+    qDebug() << planes.size();
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(stepsize, 0.0f, 0.0f));
+        qDebug("here");
+        updateGL();
+    }
+    qDebug("there");
 
+}
+void GLWidget::addY(){
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(0.0f, stepsize, 0.0f));
+        updateGL();
+    }
+
+}
+void GLWidget::addZ(){
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(0.0f, 0.0f, stepsize));
+        updateGL();
+    }
+
+}
+void GLWidget::subX(){
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(-stepsize, 0.0f, 0.0f));
+        updateGL();
+    }
+
+}
+void GLWidget::subY(){
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(0.0f, -stepsize, 0.0f));
+        updateGL();
+    }
+
+}
+void GLWidget::subZ(){
+    if (planes.size()>=picked+1){
+        planes[picked].move_plane(Vector3f(0.0f, 0.0f, -stepsize));
+        updateGL();
+    }
+
+}
+void GLWidget::nextPlane(){
+    if (planes.size()!=0){
+        picked = (picked+1)%planes.size();
+        updateGL();
+    }
+
+}
+void GLWidget::lastPlane(){
+    if (planes.size()!=0){
+        picked = (picked-1)%planes.size();
+        updateGL();
+    }
+
+}
+
+void GLWidget::deletePlane(){
+    if (planes.size()!=0){
+        planes.erase(planes.begin()+picked);
+        picked = 0;
+        updateGL();
+    }
+}
+
+void GLWidget::confirm(){
+    updateGL();
+}
 void GLWidget::initializeGL()
 {
     qglClearColor(Qt::black);
@@ -75,7 +148,10 @@ void GLWidget::paintGL()
     glLoadMatrixf( camera.viewMatrix() );
 
     draw();
+
     drawPlanes();
+
+
     if( click )
     {
         glPushMatrix();
@@ -106,6 +182,7 @@ void GLWidget::paintGL()
         glPopAttrib();
         glPopMatrix();
     }
+    swapBuffers();
 
 }
 
@@ -119,7 +196,7 @@ void GLWidget::resizeGL(int width, int height)
 
     camera.SetPerspective(50);
     glLoadMatrixf( camera.projectionMatrix() );
-\
+
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -127,8 +204,10 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     click = true;
     lastPos = event->pos();
     if(event->button() == Qt::LeftButton){
+         click = false;
 
-        camera.setMoveCenter(event->x(), event->y());
+         camera.setMoveCenter(event->x(), event->y());
+
     }
     else if (event->button() == Qt::RightButton){
         camera.MouseClick(Camera::MIDDLE, event->x(), event->y());
@@ -147,10 +226,6 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     camera.MouseDrag(event->x(),event->y());
-
-    if (camera.moving){
-        Vector3f moved = camera.getMoveDist(event->x(),event->y());
-    }
     updateGL();
 }
 
@@ -188,6 +263,7 @@ void GLWidget::createPlane(vector<Vector3f> points)
     planes.push_back(p);
 }
 
+
 void GLWidget::draw()
 {
     glEnable(GL_COLOR_MATERIAL);
@@ -220,8 +296,9 @@ void GLWidget::drawPlanes(){
         Vector3f norm = plane.getNormal();
         Vector3f col = plane.getColorf();
         vector<Vector3f> points = plane.getPoints();
+        glColor3f(0.5f,0.5f,1.0f);
         if (i == picked){
-            glColor4f(col.x(), col.y(), col.z(), 0.8);
+            glColor4f(col.x(), col.y(), col.z(), 0.95);
         }
         else{glColor4f(col.x(), col.y(), col.z(), 0.5);}
         //for (unsigned int k=0; k<2; k++){
@@ -239,10 +316,29 @@ void GLWidget::drawPlanes(){
                 glVertex3d(vertex.x(), vertex.y(), vertex.z());
             }
         //}
-        glDisable(GL_DITHER);
+
+    }
+
+    glEnd();
+    glEnable(GL_CULL_FACE);
+
+}
+
+void GLWidget::drawBuffPlanes(){
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_SMOOTH);
+    glDisable(GL_DITHER);
+
+    glBegin(GL_TRIANGLES);
+
+    for(unsigned int i=0; i < planes.size(); i++){
+        Plane plane = planes[i];
+        Vector3f norm = plane.getNormal();
+        Vector3f col = plane.getColor();
+        vector<Vector3f> points = plane.getPoints();
+
         glColor3ub(col.x(), col.y(), col.z());
-        for (unsigned int k=0; k<2; k++){
-            //norm = norm*-1;
+
             for(unsigned int j=2; j<points.size(); j++){
                 Vector3f vertex = points[j-2];
                 glNormal3d(norm.x(), norm.y(), norm.z());
@@ -254,11 +350,12 @@ void GLWidget::drawPlanes(){
                 glNormal3d(norm.x(), norm.y(), norm.z());
                 glVertex3d(vertex.x(), vertex.y(), vertex.z());
             }
-        }
-        glEnable(GL_DITHER);
+
+
     }
 
     glEnd();
+    glEnable(GL_DITHER);
     glEnable(GL_CULL_FACE);
 
 }
