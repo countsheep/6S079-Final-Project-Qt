@@ -186,15 +186,13 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     click = true;
     lastPos = event->pos();
     if(event->button() == Qt::LeftButton){
-        qDebug() << "left";
+
         camera.MouseClick(Camera::LEFT, event->x(), event->y());
     }
     else if (event->button() == Qt::RightButton){
-        qDebug() << "right";
         camera.MouseClick(Camera::RIGHT, event->x(), event->y());
     }
     else if (event->button() == Qt::MiddleButton){
-        qDebug() << "middle";
         camera.MouseClick(Camera::MIDDLE, event->x(), event->y());
     }
 }

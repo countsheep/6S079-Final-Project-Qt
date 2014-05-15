@@ -38,12 +38,7 @@ Segmenter::Segmenter()
 vector<int> Segmenter::segment_mesh(string path) {
     Polyhedron mesh;
     vector<int> segments;
-    qDebug() << QString::fromStdString(path);
     std::ifstream input(path);
-    if ( !input){
-         qDebug() << "no input";
-    }
-
 
 
     if ( !input || !(input >> mesh) || mesh.empty() ) {
@@ -57,7 +52,6 @@ vector<int> Segmenter::segment_mesh(string path) {
     // calculate SDF values and segment the mesh using default parameters.
     int number_of_segments = CGAL::segmentation_via_sdf_values(mesh, segment_property_map);
     segments.push_back(number_of_segments);
-    qDebug() << CGAL::segmentation_via_sdf_values(mesh, segment_property_map);
 
     for(Facet_iterator facet_it = mesh.facets_begin(); facet_it != mesh.facets_end(); ++facet_it) {
         segments.push_back(segment_property_map[facet_it]);

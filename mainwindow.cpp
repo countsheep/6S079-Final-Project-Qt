@@ -34,8 +34,7 @@ void MainWindow::load_file(){
                                         "",
                                         tr("Files (*.*)"));
     path = p.toUtf8().constData();
-    qDebug() << QString::fromStdString(path);
-    qDebug() << ui->glwidget;
+
     vmap.clear();
     vertices.clear();
     normals.clear();
@@ -48,10 +47,9 @@ void MainWindow::load_file(){
     string ext = path.substr(path.find_last_of(".")+1);
     string filename = path.substr(path.find_last_of("/")+1);
     filename = "/tmp/meshes/"+filename.substr(0, filename.length()-4)+"_model.off";
-    qDebug() << QString::fromStdString(ext);
-    qDebug() << QString::fromStdString(filename);
+
     if (ext == "stl"){
-        qDebug() << "derp";
+
         parseSTL(path, filename);
     }
     else if (ext == "off"){
@@ -116,7 +114,7 @@ void MainWindow::parseSTL(string source, string dest)
 
         ofstream o(dest);
         if (o.is_open()){
-            qDebug() << "opened";
+
             int e_count = f_count+v_count+2;
             o << "OFF\n"+to_string(v_count) + " "+to_string(f_count) + " "+to_string(e_count) + "\n";
             ifstream fv("/tmp/meshes/tmp/tmpv.txt");
@@ -166,7 +164,6 @@ void MainWindow::parseOFF(string source, string dest)
     int fc;
 
     if(f.is_open()){
-        qDebug() << "opened";
         string tmp;
         bool header = true;
         int vnum = 0;
@@ -208,7 +205,6 @@ void MainWindow::parseOFF(string source, string dest)
         }
 
         f.close();
-        qDebug() << "into cgal";
         this->assign_colors(Segmenter::segment_mesh(source));
         //this -> colors.push_back(Vector3f(255.0f, 255.0f, 255.0f));
 
