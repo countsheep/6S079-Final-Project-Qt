@@ -27,7 +27,7 @@ private slots:
     void parseOFF(string source, string dest);
 
     void on_last_clicked();
-    void separateMesh(vector<float> v);
+    void separateMesh(vector<vector<float>> v);
 
 private:
     Ui::MainWindow *ui;

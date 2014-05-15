@@ -19,6 +19,7 @@ public:
     void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c, vector<vector<Vector3f>> p);
     void reset_cam();
     void createPlane(vector<Vector3f> points);
+    void addParts(vector<vector<Vector3f>> v);
 
 public slots:
     void addX();
@@ -33,7 +34,7 @@ public slots:
     void confirm();
 
 signals:
-    void confirmed(vector<float> v);
+    void confirmed(vector<vector<float>> v);
 protected:
     void initializeGL();
     void paintGL();
@@ -52,6 +53,8 @@ private:
     void draw();
     void drawPlanes();
     void drawBuffPlanes();
+    void drawParts();
+    bool partRender = false;
 
     int xRot;
     int yRot;
@@ -74,6 +77,8 @@ private:
     int cY;
     float stepsize = 0.005f;
     QWidget* par;
+    vector<vector<vector<Vector3f>>> parts;
+
 
 };
 

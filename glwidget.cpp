@@ -37,27 +37,42 @@ GLWidget::~GLWidget()
 {
 }
 
-void GLWidget::addX(){
+void GLWidget::addParts(vector<vector<Vector3f>> v)
+{
+    qDebug() << v.size();
+    qDebug() << v[0].size();
+    parts.push_back(v);
+}
 
+void GLWidget::addX(){
+    if (partRender){}
+    else{
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(stepsize, 0.0f, 0.0f));
         updateGL();
+    }
     }
 
 
 }
 void GLWidget::addY(){
+    if (partRender){}
+    else{
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(0.0f, stepsize, 0.0f));
         updateGL();
     }
+    }
 
 }
 void GLWidget::addZ(){
+    if (partRender){}
+    else{
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(0.0f, 0.0f, stepsize));
         updateGL();
     }
+        }
 
 }
 void GLWidget::subX(){
@@ -68,43 +83,70 @@ void GLWidget::subX(){
 
 }
 void GLWidget::subY(){
+    if (partRender){}
+    else{
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(0.0f, -stepsize, 0.0f));
         updateGL();
     }
-
+    }
 }
 void GLWidget::subZ(){
+    if (partRender){}
+    else{
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(0.0f, 0.0f, -stepsize));
         updateGL();
     }
+    }
 
 }
 void GLWidget::nextPlane(){
+    if (partRender){
+        if (parts.size()!=0){
+            picked = (picked+1)%parts.size();
+            updateGL();
+        }
+    }
+    else{
     if (planes.size()!=0){
         picked = (picked+1)%planes.size();
         updateGL();
     }
+    }
 
 }
 void GLWidget::lastPlane(){
+    if (partRender){
+        if (parts.size()!=0){
+            picked = (picked-1)%parts.size();
+            updateGL();
+        }
+    }
+    else{
     if (planes.size()!=0){
         picked = (picked-1)%planes.size();
         updateGL();
+    }
     }
 
 }
 
 void GLWidget::deletePlane(){
+    if (partRender){}
+    else{
     if (planes.size()!=0){
         planes.erase(planes.begin()+picked);
         picked = 0;
         updateGL();
     }
+    }
 }
 
 void GLWidget::confirm(){
+    if (partRender){}
+    else{
+    vector<vector<float>> vert;
     for (int i = 0; i < planes.size(); i++){
         vector<float> v;
         Vector3f norm = planes[i].getNormal();
@@ -112,10 +154,15 @@ void GLWidget::confirm(){
         v.push_back(norm.y());
         v.push_back(norm.z());
         v.push_back(planes[i].getD());
-        emit confirmed(v);
+        vert.push_back(v);
 
     }
+    emit confirmed(vert);
+    picked = 0;
+    partRender = true;
     updateGL();
+    }
+
 }
 void GLWidget::initializeGL()
 {
@@ -154,10 +201,12 @@ void GLWidget::paintGL()
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
 
     glLoadMatrixf( camera.viewMatrix() );
-
+    if (partRender){drawParts();}
+    else{
     draw();
 
     drawPlanes();
+    }
 
 
     if( click )
@@ -279,6 +328,7 @@ void GLWidget::draw()
 
     glColor3f(0.5f,0.5f,1.0f);
     glBegin(GL_TRIANGLES);
+
     for(unsigned int i=0; i<faces.size(); i++){
         vector<int> face = faces[i];
         Vector3f norm = normals[i];
@@ -290,6 +340,29 @@ void GLWidget::draw()
             glNormal3d(norm.x(), norm.y(), norm.z());
             glVertex3d(vertex.x(), vertex.y(), vertex.z());
         }
+    }
+    glEnd();
+}
+void GLWidget::drawParts(){
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_SMOOTH);
+
+    //glColor3f(0.5f,0.5f,1.0f);
+    glBegin(GL_TRIANGLES);
+    vector<vector<Vector3f>> piece = parts[picked];
+    for (int i =0 ; i < piece.size(); i++){
+        vector<Vector3f> face = piece[i];
+        Vector3f v1 = face[0];
+        Vector3f v2 = face[1];
+        Vector3f v3 = face[2];
+        Vector3f norm = Vector3f::cross(v1-v2, v1-v3);
+        glNormal3d(norm.x(), norm.y(), norm.z());
+        glVertex3d(v1.x(), v1.y(), v1.z());
+        glNormal3d(norm.x(), norm.y(), norm.z());
+        glVertex3d(v2.x(), v2.y(), v2.z());
+        glNormal3d(norm.x(), norm.y(), norm.z());
+        glVertex3d(v3.x(), v3.y(), v3.z());
+
     }
     glEnd();
 }

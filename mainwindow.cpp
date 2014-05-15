@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->subZ->setAutoRepeat(true);
     separate = Separator();
 
-    connect(ui->glwidget, SIGNAL(confirmed(vector<float>)), this, SLOT(separateMesh(vector<float>)));
+    connect(ui->glwidget, SIGNAL(confirmed(vector<vector<float>>)), this, SLOT(separateMesh(vector<vector<float>>)));
 }
 
 MainWindow::~MainWindow()
@@ -39,8 +39,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::separateMesh(vector<float> v){
-    separate.slice(v[0], v[1], v[2], v[3]);
+void MainWindow::separateMesh(vector<vector<float>> v){
+    for (int i = 0; i < v.size() ; i++){
+    separate.slice(v[i][0], v[i][1], v[i][2], v[i][3]);
+    }
+    ui->glwidget->addParts(separate.getMeshSegmentFaces(0));
 }
 
 void MainWindow::load_file(){
@@ -224,7 +227,7 @@ void MainWindow::parseOFF(string source, string dest)
 
         f.close();
         Segmenter segmenter(source);
-        separate = Separator(dest);
+        separate = Separator(source);
         this->assign_colors(segmenter.segment_mesh());
         vector<vector<Vector3f> > trash = segmenter.get_joint_planes();
         //this -> colors.push_back(Vector3f(255.0f, 255.0f, 255.0f));

@@ -39,32 +39,55 @@ Separator::Separator(string path)
         //return EXIT_FAILURE;
     }
 
-    Nef_polyhedron mesh = P; // convert the loaded Polyhedron_extcart to a Nef_polyhedron
+    qDebug() << "SRART: size of vertices" << P.size_of_vertices();
+
+    Nef_polyhedron mesh(P); // convert the loaded Polyhedron_extcart to a Nef_polyhedron
+
+    qDebug() << "Is the mesh valid? " << mesh.is_valid();
+    qDebug() << "Is the mesh empty? " << mesh.is_empty();
+    qDebug() << "Number of vertices? " << mesh.number_of_facets();
+    qDebug() << "-------------";
 
     meshPieces.push_back(mesh);
 }
 
 void Separator::slice(float a ,float b,float c,float d) {
+    qDebug() << "Slice happening" << a << b << c << d;
     Nef_polyhedron NPlane(Plane_3_extcart( a, b, c, d));
     Nef_polyhedron NPlane2(Plane_3_extcart( a, b, c, -d));
-    for (vector<Nef_polyhedron>::iterator i=meshPieces.begin(); i != meshPieces.end(); ) {
-        Nef_polyhedron mesh = *i;
+    vector<Nef_polyhedron> meshPiecesCopy = meshPieces;
+    //for (vector<Nef_polyhedron>::iterator i=meshPiecesCopy.begin(); i != meshPiecesCopy.end(); ) {
+    for ( int i=0; i < meshPiecesCopy.size(); i++) {
+        qDebug() << "Slice iteration";
+        Nef_polyhedron mesh = meshPiecesCopy[i];//*i;
+        qDebug() << "Is the mesh valid? " << mesh.is_valid();
+        qDebug() << "Is the mesh empty? " << mesh.is_empty();
+        qDebug() << "Number of vertices? " << mesh.number_of_facets();
         Nef_polyhedron piece1 = mesh * NPlane; //union operation
         Nef_polyhedron piece2 = mesh * NPlane2;
-        //if(!cutMesh.is_simple()) {
-        //    qDebug() << "Uh oh, the cut mesh was not simple!";
-        //}
+        if(!piece1.is_simple()) {
+            qDebug() << "Uh oh, piece 1 was not simple!";
+        }
+        if(!piece2.is_simple()) {
+            qDebug() << "Uh oh, piece 2 was not simple!";
+        }
+        Polyhedron_extcart P;
+        piece2.convert_to_polyhedron(P);
+            qDebug() << "Number of facets in piece:" << P.size_of_facets();
         if (piece1 != piece2) {
-            meshPieces.erase(i);
+            qDebug() << "unique peices";
+            meshPieces.erase(meshPieces.begin()+i);
             meshPieces.push_back(piece1);
             meshPieces.push_back(piece2);
         } else {
-            ++i;
+            qDebug() << "plane did not cross";
+            //++i;
         }
     }
 }
 
-vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
+vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index) {
+    qDebug() << "meshPieces size" << meshPieces.size();
     Nef_polyhedron np = meshPieces.at(index);
     Polyhedron_extcart p;
     np.convert_to_polyhedron(p);
@@ -72,6 +95,7 @@ vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index,vector<Vector
     vector<vector<Vector3f> >facesAndVertices;
 
     for(Facet_iterator_extcart facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
+        qDebug() << "Looking at facet";
         Halfedge_facet_circulator_extcart h = facet_it->facet_begin();
         vector<Vector3f> vertList;
         do {
@@ -82,6 +106,7 @@ vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index,vector<Vector
         facesAndVertices.push_back(vertList);
     }
     qDebug() << "convertedPolyToFaces successfully";
+    return facesAndVertices;
 }
 
 
