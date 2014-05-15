@@ -25,6 +25,7 @@ class Separator
 public:
     Separator(string);
     void slice(float,float,float,float);
+    void convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f);
 private:
     vector<Nef_polyhedron> meshPieces;
 };
