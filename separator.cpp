@@ -23,6 +23,10 @@ typedef CGAL::Polyhedron_3<K_extcart>  Polyhedron_extcart;
 typedef CGAL::Nef_polyhedron_3<K_extcart>  Nef_polyhedron;
 typedef K_extcart::Plane_3  Plane_3_extcart;
 
+typedef Polyhedron_extcart::Facet_iterator Facet_iterator_extcart;
+typedef Polyhedron_extcart::Halfedge_around_facet_circulator Halfedge_facet_circulator_extcart;
+typedef K_extcart::Point_3 Point_3_extcart;
+
 Separator::Separator(){}
 Separator::Separator(string path)
 {
@@ -60,20 +64,20 @@ void Separator::slice(float a ,float b,float c,float d) {
     }
 }
 
-/*void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
+void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
     Nef_polyhedron np = meshPieces.at(index);
     Polyhedron_extcart p;
     np.convert_to_polyhedron(p);
 
-    typedef Polyhedron_extcart::Facet_iterator Facet_iterator;
-    typedef Polyhedron_extcart::Halfedge_around_facet_circulator Halfedge_facet_circulator;
-    for(Facet_iterator facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
-        Halfedge_facet_circulator h = facet_it->facet_begin();
+
+    for(Facet_iterator_extcart facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
+        Halfedge_facet_circulator_extcart h = facet_it->facet_begin();
         do {
-            Point_3 point =  h->vertex()->point();
-            Vector3f vec(point.x(),point.y(),point.z());
+            Point_3_extcart point =  h->vertex()->point();
+            Vector3f vec(CGAL::to_double(point.x()),CGAL::to_double(point.y()),CGAL::to_double(point.z()));
         } while ( ++h != facet_it->facet_begin() );
     }
-}*/
+    qDebug() << "convertedPolyToFaces successfully";
+}
 
 
