@@ -140,7 +140,7 @@ void MainWindow::parseSTL(string source, string dest)
 
 
         f.close();
-        this->assign_colors(Segmenter::segment_mesh(dest));
+        //this->assign_colors(Segmenter::segment_mesh(dest));
         this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces, this->segments, this->colors);
     }
     else
@@ -205,7 +205,9 @@ void MainWindow::parseOFF(string source, string dest)
         }
 
         f.close();
-        this->assign_colors(Segmenter::segment_mesh(source));
+        Segmenter segmenter(source);
+        this->assign_colors(segmenter.segment_mesh());
+        vector<vector<Vector3f> > trash = segmenter.get_joint_planes();
         //this -> colors.push_back(Vector3f(255.0f, 255.0f, 255.0f));
 
         this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces, this->segments, this->colors);
