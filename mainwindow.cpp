@@ -13,6 +13,7 @@
 #include <ctime>
 #include <string.h>
 #include <locale>
+#include <segmenter.h>
 
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
@@ -40,11 +41,13 @@ void MainWindow::load_file(){
     normals.clear();
     faces.clear();
     planes.clear();
+    segments.clear();
+    colors.clear();
     f_count = 0;
     v_count = 0;
     string ext = path.substr(path.find_last_of(".")+1);
     string filename = path.substr(path.find_last_of("/")+1);
-    filename = "/temp/meshes/"+filename.substr(0, filename.length()-4)+"_model.off";
+    filename = "/tmp/meshes/"+filename.substr(0, filename.length()-4)+"_model.off";
     qDebug() << QString::fromStdString(ext);
     qDebug() << QString::fromStdString(filename);
     if (ext == "stl"){
@@ -61,11 +64,11 @@ void MainWindow::parseSTL(string source, string dest)
     string l;
     ifstream f(source);
     vector<int> face;
-    //ofstream o("/temp/meshes/stand.off");
+    //ofstream o("/tmp/meshes/stand.off");
     if(f.is_open()){
 
-        ofstream tmpf("/temp/meshes/tmp/tmpf.txt");
-        ofstream tmpv("/temp/meshes/tmp/tmpv.txt");
+        ofstream tmpf("/tmp/meshes/tmp/tmpf.txt");
+        ofstream tmpv("/tmp/meshes/tmp/tmpv.txt");
 
         string tmp;
         //bool in_face = false;
@@ -113,16 +116,17 @@ void MainWindow::parseSTL(string source, string dest)
 
         ofstream o(dest);
         if (o.is_open()){
+            qDebug() << "opened";
             int e_count = f_count+v_count+2;
             o << "OFF\n"+to_string(v_count) + " "+to_string(f_count) + " "+to_string(e_count) + "\n";
-            ifstream fv("/temp/meshes/tmp/tmpv.txt");
+            ifstream fv("/tmp/meshes/tmp/tmpv.txt");
             if (fv.is_open()){
                 while(getline(fv, l)){
                     o << l + "\n";
                 }
                 fv.close();
             }
-            ifstream ff("/temp/meshes/tmp/tmpf.txt");
+            ifstream ff("/tmp/meshes/tmp/tmpf.txt");
             if (ff.is_open()){
                 while(getline(ff, l)){
                     o << l + "\n";
@@ -132,11 +136,14 @@ void MainWindow::parseSTL(string source, string dest)
 
 
         o.close();
+        }else{
+            qDebug() << "Could not write to open";
         }
 
 
         f.close();
-        this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces);
+        this->assign_colors(Segmenter::segment_mesh(dest));
+        this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces, this->segments, this->colors);
     }
     else
     {
@@ -159,12 +166,14 @@ void MainWindow::parseOFF(string source, string dest)
     int fc;
 
     if(f.is_open()){
+        qDebug() << "opened";
         string tmp;
         bool header = true;
         int vnum = 0;
         int fnum = 0;
 
         while(getline(f, l)){
+            o << l+"\n";
             stringstream ss(l);
             if (header){
                 ss >> tmp;
@@ -189,6 +198,7 @@ void MainWindow::parseOFF(string source, string dest)
                         face.push_back(fc);
                         fv.push_back(vertices[fc]);
                     }
+
                     faces.push_back(face);
                     normals.push_back(-Vector3f::cross(fv[2]-fv[0], fv[1]-fv[0]));
                     fnum--;
@@ -198,7 +208,11 @@ void MainWindow::parseOFF(string source, string dest)
         }
 
         f.close();
-        this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces);
+        qDebug() << "into cgal";
+        this->assign_colors(Segmenter::segment_mesh(source));
+        //this -> colors.push_back(Vector3f(255.0f, 255.0f, 255.0f));
+
+        this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces, this->segments, this->colors);
     }
     else{
         cout << "Could not open file. Terminating program." << endl;
@@ -206,4 +220,16 @@ void MainWindow::parseOFF(string source, string dest)
 
     }
     o.close();
+}
+
+void MainWindow::assign_colors(vector<int> seg)
+{
+    int c = seg[0];
+    for (int i = 1; i < seg.size(); i++){
+        segments.push_back(seg[i]);
+    }
+    for (int i = 0; i < c; i++){
+        Vector3f color(rand()%256, rand()%256,rand()%256);
+        colors.push_back(color);
+    }
 }

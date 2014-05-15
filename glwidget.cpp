@@ -184,9 +184,7 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     click = true;
-    qDebug() << this->width();
     lastPos = event->pos();
-    qDebug()<< event->x();
     if(event->button() == Qt::LeftButton){
         qDebug() << "left";
         camera.MouseClick(Camera::LEFT, event->x(), event->y());
@@ -225,11 +223,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 }
 
-void GLWidget::set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f){
+void GLWidget::set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c){
     this->vertices = v;
     this->normals = n;
     this->faces = f;
     this->reset_cam();
+    this->segments = s;
+    this->colors = c;
 }
 
 void GLWidget::reset_cam()
@@ -282,13 +282,11 @@ void GLWidget::draw()
     for(unsigned int i=0; i<faces.size(); i++){
         vector<int> face = faces[i];
         Vector3f norm = normals[i];
+        Vector3f c = colors[segments[i]];
         for(unsigned int j=0; j<3; j++){
             Vector3f vertex = vertices[face[j]];
-            if (i%4 == 0) {
-                glColor3f(1.0f,0.5f,0.5f);
-            } else {
-                glColor3f(0.5f,0.5f,1.0f);
-            }
+            glColor3f(c.x()/255.0f, c.y()/255.0f, c.z()/255.0f);
+
             glNormal3d(norm.x(), norm.y(), norm.z());
             glVertex3d(vertex.x(), vertex.y(), vertex.z());
         }

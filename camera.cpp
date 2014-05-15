@@ -81,7 +81,6 @@ void Camera::MouseClick(Button button, int x, int y)
 
 void Camera::MouseDrag(int x, int y)
 {
-    qDebug() << mButtonState;
     switch (mButtonState)
     {
     case LEFT:

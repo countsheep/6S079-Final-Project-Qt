@@ -14,7 +14,7 @@ class GLWidget : public QGLWidget
 public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
-    void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f);
+    void set_mesh(vector<Vector3f> v, vector<Vector3f> n,vector<vector<int>> f, vector<int> s, vector<Vector3f> c);
     void reset_cam();
 
 public slots:
@@ -55,6 +55,8 @@ private:
     vector<Vector3f> vertices;
     vector<Vector3f> normals;
     vector<vector<int>> faces;
+    vector<int> segments;
+    vector<Vector3f> colors;
 
 };
 

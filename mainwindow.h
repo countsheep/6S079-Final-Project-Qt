@@ -33,8 +33,11 @@ private:
     vector<Vector3f> normals;
     vector<vector<int>> faces;
     vector<vector<Vector3f>> planes;
+    vector<int> segments;
+    vector<Vector3f> colors;
     int f_count = 0;
     int v_count = 0;
+    void assign_colors(vector<int> seg);
 };
 
 #endif // MAINWINDOW_H
