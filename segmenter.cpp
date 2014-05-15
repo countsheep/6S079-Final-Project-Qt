@@ -116,6 +116,8 @@ std::vector<std::vector<Vector3f> > Segmenter::get_joint_planes() {
                 Vector3f planeVector2(plane.base2().x(),plane.base2().y(),plane.base2().z());
                 Vector3f planeCentroid(centroidPoint.x(),centroidPoint.y(),centroidPoint.z());
                 Vector3f normal(plane.a(),plane.b(),plane.c());
+                float d = -plane.a()*centroidPoint.x()-plane.b()*centroidPoint.y()-plane.c()*centroidPoint.z();
+                Vector3f dCoeffs(d,d,d);
 
                 std::vector<Vector3f> planePoints;
                 planePoints.push_back(planeCentroid+planeVector1*scale);
@@ -123,6 +125,7 @@ std::vector<std::vector<Vector3f> > Segmenter::get_joint_planes() {
                 planePoints.push_back(planeCentroid-planeVector2*scale);
                 planePoints.push_back(planeCentroid-planeVector1*scale);
                 planePoints.push_back(normal);
+                planePoints.push_back(dCoeffs);
 
                 qDebug() << "Plane Points: (" << planePoints.at(0).x() << planePoints.at(0).y() << planePoints.at(0).z() <<
                                         ") (" << planePoints.at(1).x() << planePoints.at(1).y() << planePoints.at(1).z() <<
