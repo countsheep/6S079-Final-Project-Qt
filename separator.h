@@ -23,6 +23,7 @@ typedef CGAL::Nef_polyhedron_3<K_extcart>  Nef_polyhedron;
 class Separator
 {
 public:
+    Separator();
     Separator(string);
     void slice(float,float,float,float);
     void convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f);

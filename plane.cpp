@@ -8,8 +8,11 @@ using namespace std;
 Plane::Plane(vector<Vector3f> coords)
 {
     anchor = coords[1];
-    points = coords;
-    normal = Vector3f::cross(coords[0]-coords[1], coords[0]-coords[2]);
+    for (int i = 0; i < 4; i++){
+        points.push_back(coords[i]);
+    }
+    normal = coords[4];
+    d = coords[5].x();
     color = Vector3f(rand()%256, rand()%256,rand()%256);
     buffer = Vector3f(color.x(),color.y(), color.z());
     colorf = Vector3f(float (color.x())/255.f, float (color.y())/255.f, float (color.z())/255.f);

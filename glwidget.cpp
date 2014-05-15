@@ -24,6 +24,7 @@ GLWidget::GLWidget(QWidget *parent) :
     camera.SetPerspective(50);
     glLoadMatrixf( camera.projectionMatrix() );
     picked = 0;
+    par = parent;
     /*vector<Vector3f> test;
     test.push_back(Vector3f(1.0, 1.0, -1.0));
     test.push_back(Vector3f(1.0, -1.0, 1.0));
@@ -37,15 +38,12 @@ GLWidget::~GLWidget()
 }
 
 void GLWidget::addX(){
-    qDebug() <<"first";
-    qDebug() << picked;
-    qDebug() << planes.size();
+
     if (planes.size()>=picked+1){
         planes[picked].move_plane(Vector3f(stepsize, 0.0f, 0.0f));
-        qDebug("here");
         updateGL();
     }
-    qDebug("there");
+
 
 }
 void GLWidget::addY(){
@@ -107,6 +105,16 @@ void GLWidget::deletePlane(){
 }
 
 void GLWidget::confirm(){
+    for (int i = 0; i < planes.size(); i++){
+        vector<float> v;
+        Vector3f norm = planes[i].getNormal();
+        v.push_back(norm.x());
+        v.push_back(norm.y());
+        v.push_back(norm.z());
+        v.push_back(planes[i].getD());
+        emit confirmed(v);
+
+    }
     updateGL();
 }
 void GLWidget::initializeGL()

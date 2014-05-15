@@ -14,6 +14,7 @@
 #include <string.h>
 #include <locale>
 #include <segmenter.h>
+#include <QtDebug>
 
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
@@ -28,11 +29,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->subX->setAutoRepeat(true);
     ui->subY->setAutoRepeat(true);
     ui->subZ->setAutoRepeat(true);
+    separate = Separator();
+
+    connect(ui->glwidget, SIGNAL(confirmed(vector<float>)), this, SLOT(separateMesh(vector<float>)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::separateMesh(vector<float> v){
+    separate.slice(v[0], v[1], v[2], v[3]);
 }
 
 void MainWindow::load_file(){
@@ -148,6 +156,7 @@ void MainWindow::parseSTL(string source, string dest)
         f.close();
         //this->assign_colors(Segmenter::segment_mesh(dest));
         Segmenter segmenter(dest);
+        separate = Separator(dest);
         this->assign_colors(segmenter.segment_mesh());
         vector<vector<Vector3f> > trash = segmenter.get_joint_planes();
         this->ui->glwidget->set_mesh(this->vertices, this->normals, this->faces, this->segments, this->colors, trash);
@@ -215,6 +224,7 @@ void MainWindow::parseOFF(string source, string dest)
 
         f.close();
         Segmenter segmenter(source);
+        separate = Separator(dest);
         this->assign_colors(segmenter.segment_mesh());
         vector<vector<Vector3f> > trash = segmenter.get_joint_planes();
         //this -> colors.push_back(Vector3f(255.0f, 255.0f, 255.0f));

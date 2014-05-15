@@ -21,6 +21,7 @@ public:
     Vector3f getColorf(){return colorf;}
     bool match_id(Vector3f c);
     bool light = false;
+    float getD(){return d;}
 
 
 protected:
@@ -32,6 +33,7 @@ private:
     Vector3f color;
     Vector3f colorf;
     Vector3f buffer;
+    float d;
 };
 
 #endif // PLANE_H

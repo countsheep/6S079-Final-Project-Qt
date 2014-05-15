@@ -33,7 +33,7 @@ public slots:
     void confirm();
 
 signals:
-
+    void confirmed(vector<float> v);
 protected:
     void initializeGL();
     void paintGL();
@@ -73,6 +73,7 @@ private:
     int cX;
     int cY;
     float stepsize = 0.005f;
+    QWidget* par;
 
 };
 

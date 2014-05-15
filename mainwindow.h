@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <stdio.h>
 #include <vecmath/include/vecmath.h>
+#include <separator.h>
 
 using namespace std;
 namespace Ui {
@@ -26,6 +27,7 @@ private slots:
     void parseOFF(string source, string dest);
 
     void on_last_clicked();
+    void separateMesh(vector<float> v);
 
 private:
     Ui::MainWindow *ui;
@@ -40,6 +42,7 @@ private:
     int f_count = 0;
     int v_count = 0;
     void assign_colors(vector<int> seg);
+    Separator separate;
 };
 
 #endif // MAINWINDOW_H

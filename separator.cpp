@@ -23,7 +23,7 @@ typedef CGAL::Polyhedron_3<K_extcart>  Polyhedron_extcart;
 typedef CGAL::Nef_polyhedron_3<K_extcart>  Nef_polyhedron;
 typedef K_extcart::Plane_3  Plane_3_extcart;
 
-
+Separator::Separator(){}
 Separator::Separator(string path)
 {
     ifstream inputtt(path);
@@ -60,7 +60,7 @@ void Separator::slice(float a ,float b,float c,float d) {
     }
 }
 
-void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
+/*void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
     Nef_polyhedron np = meshPieces.at(index);
     Polyhedron_extcart p;
     np.convert_to_polyhedron(p);
@@ -74,6 +74,6 @@ void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3
             Vector3f vec(point.x(),point.y(),point.z());
         } while ( ++h != facet_it->facet_begin() );
     }
-}
+}*/
 
 
