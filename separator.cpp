@@ -64,18 +64,22 @@ void Separator::slice(float a ,float b,float c,float d) {
     }
 }
 
-void Separator::convertPolyToFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
+vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index,vector<Vector3f>& v, vector<Vector3f>& n,vector<vector<int> >& f) {
     Nef_polyhedron np = meshPieces.at(index);
     Polyhedron_extcart p;
     np.convert_to_polyhedron(p);
 
+    vector<vector<Vector3f> >facesAndVertices;
 
     for(Facet_iterator_extcart facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
         Halfedge_facet_circulator_extcart h = facet_it->facet_begin();
+        vector<Vector3f> vertList;
         do {
             Point_3_extcart point =  h->vertex()->point();
             Vector3f vec(CGAL::to_double(point.x()),CGAL::to_double(point.y()),CGAL::to_double(point.z()));
+            vertList.push_back(vec);
         } while ( ++h != facet_it->facet_begin() );
+        facesAndVertices.push_back(vertList);
     }
     qDebug() << "convertedPolyToFaces successfully";
 }
