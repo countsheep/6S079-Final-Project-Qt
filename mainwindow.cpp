@@ -43,7 +43,9 @@ void MainWindow::separateMesh(vector<vector<float>> v){
     for (int i = 0; i < v.size() ; i++){
     separate.slice(v[i][0], v[i][1], v[i][2], v[i][3]);
     }
-    ui->glwidget->addParts(separate.getMeshSegmentFaces(0));
+    for (int j = 0; j < separate.getNumberOfMeshPieces(); j++) {
+        ui->glwidget->addParts(separate.getMeshSegmentFaces(j));
+    }
 }
 
 void MainWindow::load_file(){

@@ -30,3 +30,7 @@ bool Plane::match_id(Vector3f c)
     bool t = (c.x() == buffer.x()) && (c.y() == buffer.y()) && (c.z() == buffer.z());
     return t;
 }
+
+float Plane::getD() {
+    return -normal.x()*points[0].x()-normal.y()*points[0].y()-normal.z()*points[0].z();
+}

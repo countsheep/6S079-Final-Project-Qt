@@ -40,7 +40,7 @@ GLWidget::~GLWidget()
 void GLWidget::addParts(vector<vector<Vector3f>> v)
 {
     qDebug() << v.size();
-    qDebug() << v[0].size();
+    //qDebug() << v[0].size();
     parts.push_back(v);
 }
 

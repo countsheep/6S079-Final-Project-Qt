@@ -21,7 +21,7 @@ public:
     Vector3f getColorf(){return colorf;}
     bool match_id(Vector3f c);
     bool light = false;
-    float getD(){return d;}
+    float getD();
 
 
 protected:

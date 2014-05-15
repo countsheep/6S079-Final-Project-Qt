@@ -54,7 +54,7 @@ Separator::Separator(string path)
 void Separator::slice(float a ,float b,float c,float d) {
     qDebug() << "Slice happening" << a << b << c << d;
     Nef_polyhedron NPlane(Plane_3_extcart( a, b, c, d));
-    Nef_polyhedron NPlane2(Plane_3_extcart( a, b, c, -d));
+    Nef_polyhedron NPlane2(Plane_3_extcart( -a, -b, -c, -d));
     vector<Nef_polyhedron> meshPiecesCopy = meshPieces;
     //for (vector<Nef_polyhedron>::iterator i=meshPiecesCopy.begin(); i != meshPiecesCopy.end(); ) {
     for ( int i=0; i < meshPiecesCopy.size(); i++) {
@@ -63,6 +63,7 @@ void Separator::slice(float a ,float b,float c,float d) {
         qDebug() << "Is the mesh valid? " << mesh.is_valid();
         qDebug() << "Is the mesh empty? " << mesh.is_empty();
         qDebug() << "Number of vertices? " << mesh.number_of_facets();
+        qDebug() << "Now performing union operations with the planes";
         Nef_polyhedron piece1 = mesh * NPlane; //union operation
         Nef_polyhedron piece2 = mesh * NPlane2;
         if(!piece1.is_simple()) {
@@ -71,9 +72,7 @@ void Separator::slice(float a ,float b,float c,float d) {
         if(!piece2.is_simple()) {
             qDebug() << "Uh oh, piece 2 was not simple!";
         }
-        Polyhedron_extcart P;
-        piece2.convert_to_polyhedron(P);
-            qDebug() << "Number of facets in piece:" << P.size_of_facets();
+        qDebug() << "Now checking equality of two parts of cut";
         if (piece1 != piece2) {
             qDebug() << "unique peices";
             meshPieces.erase(meshPieces.begin()+i);
@@ -86,6 +85,10 @@ void Separator::slice(float a ,float b,float c,float d) {
     }
 }
 
+int Separator::getNumberOfMeshPieces() {
+    return meshPieces.size();
+}
+
 vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index) {
     qDebug() << "meshPieces size" << meshPieces.size();
     Nef_polyhedron np = meshPieces.at(index);
@@ -95,7 +98,7 @@ vector<vector<Vector3f> > Separator::getMeshSegmentFaces(int index) {
     vector<vector<Vector3f> >facesAndVertices;
 
     for(Facet_iterator_extcart facet_it = p.facets_begin(); facet_it != p.facets_end(); ++facet_it) {
-        qDebug() << "Looking at facet";
+        //qDebug() << "Looking at facet";
         Halfedge_facet_circulator_extcart h = facet_it->facet_begin();
         vector<Vector3f> vertList;
         do {

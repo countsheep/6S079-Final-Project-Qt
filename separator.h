@@ -27,6 +27,7 @@ public:
     Separator(string);
     void slice(float,float,float,float);
     vector<vector<Vector3f> > getMeshSegmentFaces(int index);
+    int getNumberOfMeshPieces();
 private:
     vector<Nef_polyhedron> meshPieces;
 };
